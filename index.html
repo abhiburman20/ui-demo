@@ -531,13 +531,13 @@ function handleSourceChange() {
         
         // Update header text based on source
         if (selectedSource === 'nielsen') {
-            header.textContent = 'Category report × Category × Data Type × Measure Type Combinations';
+            header.textContent = 'Report Categories × Chart Category Parameters × Data Type × Measure Type Combinations';
         } else if (selectedSource === 'socio') {
-            header.textContent = 'Category report × Socio Type Combinations';
+            header.textContent = 'Report Categories × Socio Type Combinations';
         } else if (selectedSource === 'shares') {
-            header.textContent = 'Category report × Data Type Combinations';
+            header.textContent = 'Report Categories × Data Type Combinations';
         } else {
-            header.textContent = 'Category report × Category × Data Type Combinations';
+            header.textContent = 'Report Categories × Chart Category Parameters × Data Type Combinations';
         }
     } else {
         // No source selected - disable combinations
@@ -1175,15 +1175,15 @@ function addNewRow() {
     
     // Reports Category column (always present)
     columnsHTML += `
-        <!-- Reports Category Column -->
+        <!-- Report Categories Column -->
         <div class="MuiBox-root css-0" style="width: 100%;max-width: 300px;margin: 0 1% 0 0;">
-            <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Reports Category</label>
+            <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Report Categories</label>
             <div class="MuiAutocomplete-root css-1sljewe">
                 <div class="MuiBox-root css-0" style="width: 100%;">
                     <div class="chips-container" id="industry${rowCounter}-chips"></div>
                     <div class="dropdown-container">
                         <input aria-invalid="false" autocomplete="off" id="industry${rowCounter}"
-                            placeholder="Select industries..." onfocus="showDropdown('industry${rowCounter}')" oninput="filterDropdown('industry${rowCounter}')"
+                            placeholder="Select report categories..." onfocus="showDropdown('industry${rowCounter}')" oninput="filterDropdown('industry${rowCounter}')"
                             class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-17wfm7d"
                             type="text" value="">
                         <div class="dropdown-list" id="industry${rowCounter}-dropdown">
@@ -1241,11 +1241,11 @@ function addNewRow() {
             </div>
         `;
     } else if (selectedSource === 'nielsen') {
-        // Reports Category + Category + Data Type + Measure Type
+        // Report Categories + Chart Category Parameters + Data Type + Measure Type
         columnsHTML += `
-            <!-- Category Column -->
+            <!-- Chart Category Parameters Column -->
             <div class="MuiBox-root css-0 category-column" style="width: 100%;max-width: 400px;margin: 0 1% 0 0;">
-                <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Category</label>
+                <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Chart Category Parameters</label>
                 <div class="MuiAutocomplete-root css-1sljewe">
                     <div class="MuiBox-root css-0" style="width: 100%;">
                         <div class="chips-container" id="category${rowCounter}-chips"></div>
@@ -1301,11 +1301,11 @@ function addNewRow() {
             </div>
         `;
     } else {
-        // Default: euromonitor (Sizes) - Reports Category + Category + Data Type
+        // Default: euromonitor (Sizes) - Report Categories + Chart Category Parameters + Data Type
         columnsHTML += `
-            <!-- Category Column -->
+            <!-- Chart Category Parameters Column -->
             <div class="MuiBox-root css-0 category-column" style="width: 100%;max-width: 400px;margin: 0 1% 0 0;">
-                <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Category</label>
+                <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Chart Category Parameters</label>
                 <div class="MuiAutocomplete-root css-1sljewe">
                     <div class="MuiBox-root css-0" style="width: 100%;">
                         <div class="chips-container" id="category${rowCounter}-chips"></div>
