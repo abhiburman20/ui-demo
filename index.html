@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Analysis Dashboard</title>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #f8f9fa;
+        margin: 0;
+        padding: 0;
+        line-height: 1.6;
+    }
+    .popup-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(2px);
+    }
+    .popup-modal {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        padding: 24px 20px 20px 20px;
+        width: 96%;
+        max-width: 1300px;
+        max-height: 92vh;
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #e8eaed;
+    }
+    .popup-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: #f5f5f5;
+        color: #666;
+        border: 1px solid #ddd;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1001;
+    }
+    .popup-close:hover {
+        background: #dc3545;
+        color: #fff;
+        border-color: #dc3545;
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    }
+    
+    /* Compact popup styles */
+    .popup-modal .MuiFormLabel-root {
+        font-size: 12px !important;
+        margin-bottom: 4px !important;
+        font-weight: 500;
+    }
+    .popup-modal > div {
+        margin-bottom: 12px !important;
+    }
+    .popup-modal h3 {
+        margin: 12px 0 8px 0 !important;
+        font-size: 14px !important;
+        font-weight: 600;
+    }
+    .popup-modal select {
+        font-size: 12px !important;
+        padding: 6px 8px !important;
+        height: 32px !important;
+    }
+    .popup-modal input {
+        font-size: 12px !important;
+        padding: 6px 8px !important;
+        height: 20px !important;
+    }
+    .popup-modal .MuiChip-root {
+        font-size: 11px !important;
+        padding: 2px 8px !important;
+        height: 24px !important;
+        margin: 1px !important;
+    }
+    .popup-modal .wrapper-flex {
+        gap: 16px !important;
+        margin-bottom: 8px !important;
+    }
+    .popup-modal button {
+        font-size: 12px !important;
+        padding: 6px 16px !important;
+    }
+    
+    .wrapper-flex {
+        display: flex;
+        gap: 12px;
+        align-items: stretch;
+        margin: 0;
+        width: 100%;
+        max-width: unset;
+    }
+    .MuiBox-root {
+        flex: 1 1 0;
+    }
+    button {
+        background: #0969da;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 16px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(9, 105, 218, 0.2);
+    }
+    button:hover {
+        background: #0860ca;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(9, 105, 218, 0.3);
+    }
+    .wrapper-flex > button:first-child {
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .wrapper-flex > button:first-child:hover {
+        background: #c82333;
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+    }
+    label {
+        font-weight: 600;
+        margin-bottom: 10px;
+        display: block;
+        color: #24292f;
+        font-size: 14px;
+        letter-spacing: 0.3px;
+    }
+    input[type="text"] {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #d0d7de;
+        border-radius: 8px 8px 0 0;
+        font-size: 14px;
+        margin-top: 6px;
+        margin-bottom: 0;
+        box-sizing: border-box;
+        background: #fff;
+        transition: all 0.2s ease;
+        outline: none;
+    }
+    input[type="text"]:focus {
+        border-color: #0969da;
+        box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.1);
+        background: #fff;
+    }
+    input[type="text"]::placeholder {
+        color: #656d76;
+        font-size: 13px;
+    }
+    .MuiChip-root {
+        background: #e8f4fd;
+        color: #1565c0;
+        border: 1px solid #bbdefb;
+        border-radius: 20px;
+        padding: 6px 12px;
+        margin: 3px 4px 3px 0;
+        display: inline-flex;
+        align-items: center;
+        font-size: 13px;
+        font-weight: 500;
+        max-width: 200px;
+        position: relative;
+        transition: all 0.2s ease;
+    }
+    .MuiChip-root:hover {
+        background: #d1e7ff;
+        border-color: #90caf9;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(21, 101, 192, 0.2);
+    }
+    .MuiChip-root svg {
+        margin-left: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+    }
+    .MuiChip-root svg:hover {
+        color: #d32f2f;
+        transform: scale(1.2);
+    }
+    .MuiBox-root {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        margin-bottom: 10px;
+        min-height: 60px;
+        max-height: 120px;
+        overflow-y: visible;
+    }
+    .dropdown-container {
+        position: relative;
+        display: block;
+        width: 100%;
+    }
+    .dropdown-list {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #d0d7de;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        margin-top: 0;
+    }
+    .dropdown-item {
+        padding: 12px 16px;
+        cursor: pointer;
+        border-bottom: 1px solid #f6f8fa;
+        font-size: 14px;
+        transition: background-color 0.15s ease;
+    }
+    .dropdown-item:hover {
+        background: #f6f8fa;
+        color: #0969da;
+    }
+    .dropdown-item:last-child {
+        border-bottom: none;
+        border-radius: 0 0 7px 7px;
+    }
+    .dropdown-item:first-child {
+        border-top: 1px solid #e1e4e8;
+    }
+    
+    /* Chip container improvements - flexible without scrollbars */
+    [id$="-chips"] {
+        min-height: 36px;
+        max-height: 120px;
+        margin-bottom: 8px !important;
+        padding: 6px 8px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        background: #fafafa;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 2px;
+        overflow-y: auto;
+        position: relative;
+    }
+    [id$="-chips"]:empty {
+        border-style: dashed;
+        border-color: #ccc;
+        background: #f9f9f9;
+    }
+    
+    /* Column layout improvements - dynamic and flexible */
+    .MuiBox-root[style*="max-width: 300px"],
+    .MuiBox-root[style*="max-width: 400px"] {
+        min-height: auto;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        flex: 1;
+        background: white;
+        border-radius: 8px;
+        padding: 12px;
+        border: 1px solid #e8eaed;
+    }
+    
+    .MuiAutocomplete-root {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        flex: 1;
+    }
+    
+    .MuiBox-root[style*="width: 100%"] {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+    
+    /* Row improvements - dynamic spacing */
+    .wrapper-flex {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 20px;
+        padding: 16px;
+        background: #fbfcfd;
+        border-radius: 12px;
+        border: 1px solid #d8dee4;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        transition: box-shadow 0.2s ease;
+    }
+    .wrapper-flex:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    
+    /* Better chip styling - compact and flexible */
+    .MuiChip-root {
+        background: #e3f2fd;
+        color: #1976d2;
+        border-radius: 12px;
+        padding: 2px 8px;
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        font-size: 12px;
+        line-height: 1.2;
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    
+    /* Popup content scrollbar styling */
+    .popup-content::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .popup-content::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+    
+    .popup-content::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+    }
+    
+    .popup-content::-webkit-scrollbar-thumb:hover {
+        background: #a1a1a1;
+    }
+</style>
+<div class="popup-overlay">
+    <div class="popup-modal">
+        <button class="popup-close" onclick="document.querySelector('.popup-overlay').style.display='none'">&times;</button>
+        
+        <!-- Chart Types Dropdown -->
+        <div class="popup-content" style="overflow-y:auto;flex:1;padding-right:8px;">
+        <div style="margin-bottom:20px;">
+            <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Choose Chart Types</label>
+            <div class="MuiAutocomplete-root css-1sljewe" style="margin-top:8px;">
+                <select style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;font-size:15px;">
+                    <option value="">Select chart type...</option>
+                    <option value="category-bar">Category Bar</option>
+                    <option value="category-scatter">Category Scatter</option>
+                    <option value="category-scatter-grouped">Category Scatter Grouped</option>
+                    <option value="industry-lead">Industry Lead</option>
+                    <option value="company-table">Company Table</option>
+                    <option value="brand-table">Brand Table</option>
+                    <option value="channel-percentage-breakdown">Channel Percentage Breakdown</option>
+                    <option value="dual-gdp-growth-line">Dual GDP Growth Line</option>
+                    <option value="inflation-line">Inflation Line</option>
+                    <option value="population-line">Population Line</option>
+                    <option value="difference-expenditure-vs">Difference Expenditure vs</option>
+                    <option value="breakdown-by-retirement">Breakdown by Retirement</option>
+                    <option value="gender-breakdown">Gender Breakdown</option>
+                    <option value="net-credits">Net Credits</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Source Dropdown -->
+        <div style="margin-bottom:20px;">
+            <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Choose Source</label>
+            <div class="MuiAutocomplete-root css-1sljewe" style="margin-top:8px;">
+                <select id="sourceSelect" onchange="handleSourceChange()" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;font-size:15px;">
+                    <option value="">Select source...</option>
+                    <option value="euromonitor">Sizes</option>
+                    <option value="nielsen">Measures</option>
+                    <option value="socio">Socio</option>
+                    <option value="shares">Shares</option>
+                </select>
+            </div>
+        </div>
+
+        
+        <!-- Industry/DataType Combinations Section -->
+        <div style="border-top:1px solid #e0e0e0;padding-top:20px;margin-bottom:20px;" id="rowsContainer">
+            <h3 id="combinationsHeader" style="margin:0 0 20px 0;color:#333;font-size:18px;">Please select a source to configure combinations</h3>
+            <div id="sourcePlaceholder" style="text-align:center;padding:40px;color:#666;font-style:italic;background:#f8f9fa;border:2px dashed #ddd;border-radius:8px;">
+                <svg style="margin-bottom:16px;opacity:0.5;" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M12 2L2 7v10c0 5.55 3.84 10 10 10s10-4.45 10-10V7l-10-5z"/>
+                    <path d="M12 22s8-4 8-10V7l-8-5-8 5v5c0 6 8 10 8 10"/>
+                </svg>
+                <p style="margin:0;font-size:16px;">Select a source from the dropdown above to start configuring your data combinations</p>
+            </div>
+        </div>
+         <!-- Add Button -->
+        <div id="addButtonContainer" style="text-align:center;">
+            <button id="addRowButton" onclick="addNewRow()" style="padding:10px 28px;font-size:18px;">Add +</button>
+        </div>
+<!-- Years Dropdown -->
+        <div style="margin-bottom:30px;">
+            <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Choose Years</label>
+            <div class="MuiAutocomplete-root css-1sljewe" style="margin-top:8px;">
+                <select style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;font-size:15px;">
+                    <option value="">Select years...</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                    <option value="2021">2021</option>
+                    <option value="2020">2020</option>
+                    <option value="2019-2024">2019-2024</option>
+                    <option value="2020-2024">2020-2024</option>
+                </select>
+            </div>
+        </div>
+        
+       
+
+    </div>
+</div>
+
+<script>
+// Counter for new row IDs - starts from 0 since we have no hardcoded rows
+let rowCounter = 0;
+
+// Reports Category options (for Reports Category dropdown)
+const reportsCategoryOptions = [
+    'Away-From-Home Tissue and Hygiene in',
+    'Nappies/Diapers/Pants in',
+    'Retail Adult Incontinence in',
+    'Retail Tissue in',
+    'Rx/Reimbursement Adult Incontinence in',
+    'Sanitary Protection in',
+    'Tissue and Hygiene in',
+    'Wipes in'
+];
+
+// All category options (available in Category dropdown regardless of Reports Category selection)
+const allCategoryOptions = [
+    'Nappies/Diapers', 'Wipes', 'Baby Food', 'Formula', 'Baby Toiletries',
+    'Skincare', 'Hair Care', 'Oral Care', 'Deodorants', 'Fragrances',
+    'Vitamins', 'Pain Relief', 'First Aid', 'Medical Devices', 'Supplements',
+    'Dairy', 'Beverages', 'Snacks', 'Frozen Foods', 'Bakery',
+    'Laundry Care', 'Surface Care', 'Dish Care', 'Air Care', 'Toilet Care',
+    'Nappies/Diapers/Pants', 'Training Pants', 'Swim Pants',
+    'Facial Tissues', 'Toilet Paper', 'Paper Towels', 'Napkins',
+    'Sanitary Pads', 'Tampons', 'Panty Liners', 'Menstrual Cups',
+    'Baby Wipes', 'Personal Care Wipes', 'Household Wipes', 'Industrial Wipes',
+    'Adult Diapers', 'Adult Pads', 'Protective Underwear',
+    'Paper Tableware', 'Tablecloths', 'Boxed Facial Tissues', 'Pocket Handkerchiefs',
+    'Commercial Toilet Paper', 'Dispensers',
+    'Prescription Incontinence Products', 'Medical Adult Diapers', 'Therapeutic Pads'
+];
+
+const dataTypeOptions = [
+    'AFH rsp (curr/curr, local)',
+    'AFH volume (tonnes/units, local)',
+    'Retail rsp (curr/curr, local)',
+    'Retail volume (tonnes/units, local)',
+    'Rx/Reimbursement rsp (curr/curr, local)',
+    'Rx/Reimbursement volume (tonnes/units, local)',
+    'Total rsp (curr/curr, local)',
+    'Total volume (tonnes/units, local)'
+];
+
+const measureTypeOptions = [
+    'AFH Channel',
+    'AFH Paper Towels by Type',
+    'Channel',
+    'Digital/Applicator Tampons'
+];
+
+const socioTypeOptions = [
+    'Demographics', 'Lifestyle', 'Attitudes', 'Behavior', 'Psychographics', 'Social Class'
+];
+
+// Handle source selection change
+// Clear all existing rows
+function clearAllRows() {
+    const allRows = document.querySelectorAll('.wrapper-flex');
+    allRows.forEach(row => {
+        row.remove();
+    });
+    // Reset row counter
+    rowCounter = 0;
+    console.log('All rows cleared, rowCounter reset to 0');
+}
+
+function handleSourceChange() {
+    const sourceSelect = document.getElementById('sourceSelect');
+    const selectedSource = sourceSelect.value;
+    const header = document.getElementById('combinationsHeader');
+    
+    console.log('Source changed to:', selectedSource);
+    
+    // Clear all existing rows when source changes
+    clearAllRows();
+    
+    // Check if source is selected
+    if (selectedSource && selectedSource !== '') {
+        // Source is selected - enable combinations
+        enableCombinations();
+        
+        // Add one blank row for the new source
+        addNewRow();
+        
+        // Update header text based on source
+        if (selectedSource === 'nielsen') {
+            header.textContent = 'Category report × Category × Data Type × Measure Type Combinations';
+        } else if (selectedSource === 'socio') {
+            header.textContent = 'Category report × Socio Type Combinations';
+        } else if (selectedSource === 'shares') {
+            header.textContent = 'Category report × Data Type Combinations';
+        } else {
+            header.textContent = 'Category report × Category × Data Type Combinations';
+        }
+    } else {
+        // No source selected - disable combinations
+        disableCombinations();
+        header.textContent = 'Please select a source to configure combinations';
+    }
+}
+
+// Show measure type columns
+function showMeasureTypeColumns() {
+    const measureTypeColumns = document.querySelectorAll('.measure-type-column');
+    measureTypeColumns.forEach(column => {
+        column.style.display = 'block';
+    });
+    console.log('Measure type columns shown');
+}
+
+// Hide measure type columns
+function hideMeasureTypeColumns() {
+    const measureTypeColumns = document.querySelectorAll('.measure-type-column');
+    measureTypeColumns.forEach(column => {
+        column.style.display = 'none';
+        // Clear any selections when hiding
+        const chips = column.querySelector('[id$="-chips"]');
+        if (chips) {
+            chips.innerHTML = '';
+        }
+        const input = column.querySelector('input');
+        if (input) {
+            input.value = '';
+        }
+    });
+    console.log('Measure type columns hidden');
+}
+
+// Show socio type columns
+function showSocioTypeColumns() {
+    const socioTypeColumns = document.querySelectorAll('.socio-type-column');
+    socioTypeColumns.forEach(column => {
+        column.style.display = 'block';
+    });
+    console.log('Socio type columns shown');
+}
+
+// Hide socio type columns
+function hideSocioTypeColumns() {
+    const socioTypeColumns = document.querySelectorAll('.socio-type-column');
+    socioTypeColumns.forEach(column => {
+        column.style.display = 'none';
+        // Clear any selections when hiding
+        const chips = column.querySelector('[id$="-chips"]');
+        if (chips) {
+            chips.innerHTML = '';
+        }
+        const input = column.querySelector('input');
+        if (input) {
+            input.value = '';
+        }
+    });
+    console.log('Socio type columns hidden');
+}
+
+// Show category columns
+function showCategoryColumns() {
+    const categoryColumns = document.querySelectorAll('.category-column');
+    categoryColumns.forEach(column => {
+        column.style.display = 'block';
+    });
+    console.log('Category columns shown');
+}
+
+// Hide category columns
+function hideCategoryColumns() {
+    const categoryColumns = document.querySelectorAll('.category-column');
+    categoryColumns.forEach(column => {
+        column.style.display = 'none';
+        // Clear any selections when hiding
+        const chips = column.querySelector('[id$="-chips"]');
+        if (chips) {
+            chips.innerHTML = '';
+        }
+        const input = column.querySelector('input');
+        if (input) {
+            input.value = '';
+        }
+    });
+    console.log('Category columns hidden');
+}
+
+// Show data type columns
+function showDataTypeColumns() {
+    const dataTypeColumns = document.querySelectorAll('.data-type-column');
+    dataTypeColumns.forEach(column => {
+        column.style.display = 'block';
+    });
+    console.log('Data type columns shown');
+}
+
+// Hide data type columns
+function hideDataTypeColumns() {
+    const dataTypeColumns = document.querySelectorAll('.data-type-column');
+    dataTypeColumns.forEach(column => {
+        column.style.display = 'none';
+        // Clear any selections when hiding
+        const chips = column.querySelector('[id$="-chips"]');
+        if (chips) {
+            chips.innerHTML = '';
+        }
+        const input = column.querySelector('input');
+        if (input) {
+            input.value = '';
+        }
+    });
+    console.log('Data type columns hidden');
+}
+
+// Get all selected category reports across all rows
+function getSelectedCategoryReports() {
+    const selectedReports = [];
+    const allIndustryChips = document.querySelectorAll('[id^="industry"][id$="-chips"] .MuiChip-label');
+    allIndustryChips.forEach(chip => {
+        const reportName = chip.textContent.trim();
+        if (reportName) {
+            selectedReports.push(reportName);
+        }
+    });
+    return selectedReports;
+}
+
+// Update all category report dropdowns to disable selected options
+function updateAllCategoryReportDropdowns() {
+    const selectedReports = getSelectedCategoryReports();
+    const allIndustryDropdowns = document.querySelectorAll('[id^="industry"][id$="-dropdown"]');
+    
+    allIndustryDropdowns.forEach(dropdown => {
+        const items = dropdown.getElementsByClassName('dropdown-item');
+        
+        for (let item of items) {
+            const reportValue = item.textContent.trim();
+            
+            // Get current row's selections to exclude from disabling
+            const dropdownId = dropdown.id;
+            const inputId = dropdownId.replace('-dropdown', '');
+            const currentChipsContainer = document.getElementById(inputId + '-chips');
+            const currentSelections = [];
+            if (currentChipsContainer) {
+                const currentChips = currentChipsContainer.querySelectorAll('.MuiChip-label');
+                currentChips.forEach(chip => {
+                    currentSelections.push(chip.textContent.trim());
+                });
+            }
+            
+            // If this report is selected elsewhere (not in current row), disable it
+            if (selectedReports.includes(reportValue) && !currentSelections.includes(reportValue)) {
+                item.style.opacity = '0.3';
+                item.style.pointerEvents = 'none';
+                item.style.color = '#999';
+                item.style.backgroundColor = '#f5f5f5';
+                item.title = 'This category report is already selected in another row';
+                item.setAttribute('data-disabled', 'true');
+            } else {
+                item.style.opacity = '1';
+                item.style.pointerEvents = 'auto';
+                item.style.color = '';
+                item.style.backgroundColor = '';
+                item.title = '';
+                item.removeAttribute('data-disabled');
+            }
+        }
+    });
+}
+
+
+
+
+// Show dropdown when input is focused
+function showDropdown(inputId) {
+    // Check if source is selected first
+    const sourceSelect = document.getElementById('sourceSelect');
+    const selectedSource = sourceSelect ? sourceSelect.value : '';
+    
+    if (!selectedSource || selectedSource === '') {
+        console.warn('Cannot show dropdown: No source selected');
+        return;
+    }
+    
+    const dropdown = document.getElementById(inputId + '-dropdown');
+    if (dropdown) {
+        // Update category report dropdown states if it's an industry input
+        if (inputId.includes('industry')) {
+            updateAllCategoryReportDropdowns();
+        }
+        dropdown.style.display = 'block';
+    }
+}
+
+// Hide dropdown
+function hideDropdown(inputId) {
+    setTimeout(() => {
+        const dropdown = document.getElementById(inputId + '-dropdown');
+        if (dropdown) {
+            dropdown.style.display = 'none';
+        }
+    }, 150);
+}
+
+// Filter dropdown options based on input
+function filterDropdown(inputId) {
+    const input = document.getElementById(inputId);
+    const dropdown = document.getElementById(inputId + '-dropdown');
+    const filter = input.value.toLowerCase();
+    const items = dropdown.getElementsByClassName('dropdown-item');
+    
+    for (let i = 0; i < items.length; i++) {
+        const text = items[i].textContent.toLowerCase();
+        if (text.indexOf(filter) > -1) {
+            items[i].style.display = '';
+        } else {
+            items[i].style.display = 'none';
+        }
+    }
+}
+
+// Select industry (now multi-selection)
+function selectIndustry(industryId, categoryId, industryValue) {
+    // Use the same multi-selection logic as categories
+    addIndustryChip(industryId, industryValue);
+    
+    // Clear input and hide dropdown
+    document.getElementById(industryId).value = '';
+    hideDropdown(industryId);
+    
+    // Check add button state
+    checkAddButtonState();
+}
+
+// Add category chip
+function addCategoryChip(categoryId, value) {
+    const categoryChipsContainer = document.getElementById(categoryId + '-chips');
+    
+    // Check if chip already exists
+    const existingChips = categoryChipsContainer.querySelectorAll('.MuiChip-label');
+    for (let chip of existingChips) {
+        if (chip.textContent === value) {
+            return; // Don't add duplicate
+        }
+    }
+    
+    const chip = document.createElement('div');
+    chip.className = 'MuiButtonBase-root MuiChip-root MuiChip-filled MuiChip-sizeMedium MuiChip-colorDefault MuiChip-deletable MuiChip-deletableColorDefault MuiChip-filledDefault em-chip css-csozhl';
+    chip.innerHTML = `
+        <span class="MuiChip-label MuiChip-labelMedium css-14vsv3w">${value}</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="13px" height="13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x MuiChip-deleteIcon MuiChip-deleteIconMedium MuiChip-deleteIconColorDefault MuiChip-deleteIconFilledColorDefault" onclick="removeChip(this)" aria-hidden="true">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+        </svg>
+    `;
+    categoryChipsContainer.appendChild(chip);
+}
+
+// Add industry chip (multi-selection)
+function addIndustryChip(industryId, value) {
+    const industryChipsContainer = document.getElementById(industryId + '-chips');
+    
+    // Check if chip already exists
+    const existingChips = industryChipsContainer.querySelectorAll('.MuiChip-label');
+    for (let chip of existingChips) {
+        if (chip.textContent === value) {
+            return; // Don't add duplicate
+        }
+    }
+    
+    const chip = document.createElement('div');
+    chip.className = 'MuiButtonBase-root MuiChip-root MuiChip-filled MuiChip-sizeMedium MuiChip-colorDefault MuiChip-deletable MuiChip-deletableColorDefault MuiChip-filledDefault em-chip css-csozhl';
+    chip.innerHTML = `
+        <span class="MuiChip-label MuiChip-labelMedium css-14vsv3w">${value}</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="13px" height="13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x MuiChip-deleteIcon MuiChip-deleteIconMedium MuiChip-deleteIconColorDefault MuiChip-deleteIconFilledColorDefault" onclick="removeCategoryReportChip(this)" aria-hidden="true">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+        </svg>
+    `;
+    industryChipsContainer.appendChild(chip);
+    
+    // Update all dropdowns to reflect the new selection
+    updateAllCategoryReportDropdowns();
+}
+
+// Initialize category dropdown with all available options
+function initializeCategoryDropdown(categoryDropdownId) {
+    const categoryDropdown = document.getElementById(categoryDropdownId);
+    if (!categoryDropdown) return;
+    
+    // Clear existing dropdown options
+    categoryDropdown.innerHTML = '';
+    
+    // Populate dropdown with all category options
+    allCategoryOptions.forEach(category => {
+        const categoryItem = document.createElement('div');
+        categoryItem.className = 'dropdown-item';
+        const rowNumber = categoryDropdownId.replace('category', '').replace('-dropdown', '');
+        categoryItem.onclick = () => addSelection('category' + rowNumber, category);
+        categoryItem.textContent = category;
+        categoryDropdown.appendChild(categoryItem);
+    });
+}
+
+// Add selection as chip (for industries, categories, datatypes, and measure types)
+function addSelection(inputId, value) {
+    // For category reports, check if the item is disabled
+    if (inputId.includes('industry')) {
+        // Find the clicked item to check if it's disabled
+        const dropdown = document.getElementById(inputId + '-dropdown');
+        if (dropdown) {
+            const items = dropdown.getElementsByClassName('dropdown-item');
+            for (let item of items) {
+                if (item.textContent.trim() === value && item.getAttribute('data-disabled') === 'true') {
+                    console.log('Cannot select disabled category report:', value);
+                    return; // Don't allow selection of disabled items
+                }
+            }
+        }
+        addIndustryChip(inputId, value);
+    } else if (inputId.includes('category')) {
+        addCategoryChip(inputId, value);
+    } else if (inputId.includes('datatype')) {
+        // For datatype, only one selection allowed
+        const chipsContainer = document.getElementById(inputId + '-chips');
+        chipsContainer.innerHTML = '';
+        
+        const chip = document.createElement('div');
+        chip.className = 'MuiButtonBase-root MuiChip-root MuiChip-filled MuiChip-sizeMedium MuiChip-colorDefault MuiChip-deletable MuiChip-deletableColorDefault MuiChip-filledDefault em-chip css-11vqqn7';
+        chip.innerHTML = `
+            <span class="MuiChip-label MuiChip-labelMedium css-14vsv3w">${value}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="13px" height="13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x MuiChip-deleteIcon MuiChip-deleteIconMedium MuiChip-deleteIconColorDefault MuiChip-deleteIconFilledColorDefault" onclick="removeChip(this)" aria-hidden="true">
+                <path d="M18 6 6 18"></path>
+                <path d="m6 6 12 12"></path>
+            </svg>
+        `;
+        chipsContainer.appendChild(chip);
+    } else if (inputId.includes('measuretype')) {
+        // For measure type, only one selection allowed  
+        const chipsContainer = document.getElementById(inputId + '-chips');
+        chipsContainer.innerHTML = '';
+        
+        const chip = document.createElement('div');
+        chip.className = 'MuiButtonBase-root MuiChip-root MuiChip-filled MuiChip-sizeMedium MuiChip-colorDefault MuiChip-deletable MuiChip-deletableColorDefault MuiChip-filledDefault em-chip css-11vqqn7';
+        chip.innerHTML = `
+            <span class="MuiChip-label MuiChip-labelMedium css-14vsv3w">${value}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="13px" height="13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x MuiChip-deleteIcon MuiChip-deleteIconMedium MuiChip-deleteIconColorDefault MuiChip-deleteIconFilledColorDefault" onclick="removeChip(this)" aria-hidden="true">
+                <path d="M18 6 6 18"></path>
+                <path d="m6 6 12 12"></path>
+            </svg>
+        `;
+        chipsContainer.appendChild(chip);
+    } else if (inputId.includes('sociotype')) {
+        // For socio type, only one selection allowed  
+        const chipsContainer = document.getElementById(inputId + '-chips');
+        chipsContainer.innerHTML = '';
+        
+        const chip = document.createElement('div');
+        chip.className = 'MuiButtonBase-root MuiChip-root MuiChip-filled MuiChip-sizeMedium MuiChip-colorDefault MuiChip-deletable MuiChip-deletableColorDefault MuiChip-filledDefault em-chip css-11vqqn7';
+        chip.innerHTML = `
+            <span class="MuiChip-label MuiChip-labelMedium css-14vsv3w">${value}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="13px" height="13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x MuiChip-deleteIcon MuiChip-deleteIconMedium MuiChip-deleteIconColorDefault MuiChip-deleteIconFilledColorDefault" onclick="removeChip(this)" aria-hidden="true">
+                <path d="M18 6 6 18"></path>
+                <path d="m6 6 12 12"></path>
+            </svg>
+        `;
+        chipsContainer.appendChild(chip);
+    }
+    
+    // Clear input and hide dropdown
+    const input = document.getElementById(inputId);
+    if (input) {
+        input.value = '';
+        hideDropdown(inputId);
+    }
+}
+
+// Remove chip selection
+function removeChip(svgElement) {
+    svgElement.parentElement.remove();
+}
+
+// Remove industry chip (now just removes chip like other multi-selects)
+function removeIndustryChip(svgElement, categoryId) {
+    svgElement.parentElement.remove();
+    
+    // Check add button state
+    checkAddButtonState();
+}
+
+// Remove category report chip and update all dropdowns
+function removeCategoryReportChip(svgElement) {
+    const chipContainer = svgElement.closest('[id$="-chips"]');
+    const industryValue = svgElement.parentElement.querySelector('.MuiChip-label').textContent.trim();
+    
+    svgElement.parentElement.remove();
+    
+    // Update all dropdowns to re-enable the removed option
+    updateAllCategoryReportDropdowns();
+    
+    // Check add button state
+    checkAddButtonState();
+}
+
+
+
+// Check if add button should be enabled (no validation needed for multi-select)
+function checkAddButtonState() {
+    // Use ID selector first, then fallback methods
+    let addButton = document.getElementById('addRowButton');
+    if (!addButton) {
+        addButton = document.querySelector('[style*="padding:10px 28px"]');
+    }
+    if (!addButton) {
+        // Look for button with "Add" text
+        const buttons = document.querySelectorAll('button');
+        for (let btn of buttons) {
+            if (btn.textContent.includes('Add')) {
+                addButton = btn;
+                break;
+            }
+        }
+    }
+    
+    if (!addButton) {
+        console.log('Add button not found with any selector');
+        return;
+    }
+    
+    // Always enable add button since Category report is now multi-select
+    addButton.disabled = false;
+    addButton.removeAttribute('disabled');
+    addButton.style.opacity = '1';
+    addButton.style.cursor = 'pointer';
+    addButton.style.pointerEvents = 'auto';
+    addButton.title = '';
+    console.log('Add button ENABLED (multi-select mode)');
+}
+
+// Remove entire row
+function removeRow(button) {
+    const allRows = document.querySelectorAll('.wrapper-flex');
+    
+    // Prevent removing if only one row remains
+    if (allRows.length <= 1) {
+        console.log('Cannot remove the last remaining row - minimum one row required');
+        return;
+    }
+    
+    button.parentElement.remove();
+    
+    // Update all dropdowns since selections may have been removed
+    updateAllCategoryReportDropdowns();
+    
+    // Check add button state
+    checkAddButtonState();
+    // Update cross button states
+    updateCrossButtonStates();
+}
+
+// Update cross button states - disable if only one row exists
+function updateCrossButtonStates() {
+    const allRows = document.querySelectorAll('.wrapper-flex');
+    
+    // Find cross buttons - use a more direct approach
+    let crossButtons = [];
+    allRows.forEach(row => {
+        const button = row.querySelector('button');
+        if (button && button.textContent.trim() === '×') {
+            crossButtons.push(button);
+        }
+    });
+    
+    console.log(`updateCrossButtonStates: Found ${allRows.length} rows and ${crossButtons.length} cross buttons`);
+    console.log(`Cross buttons found:`, Array.from(crossButtons).map((btn, i) => ({
+        index: i,
+        onclick: btn.getAttribute('onclick') || 'none',
+        text: btn.textContent.trim(),
+        disabled: btn.disabled,
+        opacity: btn.style.opacity
+    })));
+    
+    crossButtons.forEach((button, index) => {
+        if (allRows.length <= 1) {
+            button.disabled = true;
+            button.style.opacity = '0.3';
+            button.style.cursor = 'not-allowed';
+            button.title = 'Cannot remove the last row - minimum one row required';
+            console.log(`Cross button ${index}: DISABLED (only ${allRows.length} row(s))`);
+        } else {
+            button.disabled = false;
+            button.style.opacity = '1';
+            button.style.cursor = 'pointer';
+            button.title = 'Remove this row';
+            console.log(`Cross button ${index}: ENABLED (${allRows.length} rows exist)`);
+        }
+    });
+    
+    console.log('=== Cross button states updated ===');
+}
+
+// Enable combinations section
+function enableCombinations() {
+    const rowsContainer = document.getElementById('rowsContainer');
+    const addButtonContainer = document.getElementById('addButtonContainer');
+    const sourcePlaceholder = document.getElementById('sourcePlaceholder');
+    
+    if (rowsContainer) {
+        rowsContainer.style.opacity = '1';
+        rowsContainer.style.pointerEvents = 'auto';
+    }
+    
+    if (addButtonContainer) {
+        addButtonContainer.style.display = 'block';
+        const addButton = document.getElementById('addRowButton');
+        if (addButton) {
+            addButton.disabled = false;
+            addButton.style.opacity = '1';
+            addButton.style.cursor = 'pointer';
+        }
+    }
+    
+    // Hide the placeholder message
+    if (sourcePlaceholder) {
+        sourcePlaceholder.style.display = 'none';
+    }
+    
+    console.log('Combinations section enabled');
+}
+
+// Disable combinations section
+function disableCombinations() {
+    const rowsContainer = document.getElementById('rowsContainer');
+    const addButtonContainer = document.getElementById('addButtonContainer');
+    const sourcePlaceholder = document.getElementById('sourcePlaceholder');
+    
+    if (rowsContainer) {
+        rowsContainer.style.opacity = '1'; // Keep full opacity to show placeholder
+        rowsContainer.style.pointerEvents = 'none';
+        
+        // Disable all inputs in existing rows
+        const inputs = rowsContainer.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.disabled = true;
+            input.style.opacity = '0.5';
+        });
+        
+        // Disable all dropdowns
+        const dropdowns = rowsContainer.querySelectorAll('.dropdown-list');
+        dropdowns.forEach(dropdown => {
+            dropdown.style.display = 'none';
+        });
+        
+        // Disable cross buttons
+        const crossButtons = rowsContainer.querySelectorAll('button');
+        crossButtons.forEach(button => {
+            if (button.textContent.trim() === '×') {
+                button.disabled = true;
+                button.style.opacity = '0.3';
+                button.style.cursor = 'not-allowed';
+            }
+        });
+    }
+    
+    if (addButtonContainer) {
+        addButtonContainer.style.display = 'none';
+    }
+    
+    // Show the placeholder message
+    if (sourcePlaceholder) {
+        sourcePlaceholder.style.display = 'block';
+    }
+    
+    console.log('Combinations section disabled');
+}
+
+// Clear all existing rows
+function clearAllRows() {
+    const allRows = document.querySelectorAll('.wrapper-flex');
+    allRows.forEach(row => {
+        row.remove();
+    });
+    // Reset row counter
+    rowCounter = 0;
+    console.log('All rows cleared, rowCounter reset to 0');
+}
+
+// Add new row
+function addNewRow() {
+    try {
+        console.log('=== ADD NEW ROW CALLED ===');
+        
+        // Get current source selection to determine which columns to show
+        const sourceSelect = document.getElementById('sourceSelect');
+        const selectedSource = sourceSelect ? sourceSelect.value : '';
+        console.log('Adding row for source:', selectedSource);
+        
+        // Check if source is selected
+        if (!selectedSource || selectedSource === '') {
+            console.warn('Cannot add row: No source selected');
+            alert('Please select a source before adding combinations.');
+            return;
+        }
+        
+        // Check if source is selected
+        if (!selectedSource || selectedSource === '') {
+            console.warn('Cannot add row: No source selected');
+            alert('Please select a source before adding combinations.');
+            return;
+        }
+        
+        // Check if source is selected
+        if (!selectedSource || selectedSource === '') {
+            console.warn('Cannot add row: No source selected');
+            alert('Please select a source before adding combinations.');
+            return;
+        }
+    
+    rowCounter++;
+    
+    // Find container using ID approach
+    const container = document.getElementById('rowsContainer');
+    const addButtonContainer = document.getElementById('addButtonContainer');
+    
+    if (!container || !addButtonContainer) {
+        console.error('Could not find rowsContainer or addButtonContainer');
+        return;
+    }
+
+    
+    // Generate columns based on source selection
+    let columnsHTML = '';
+    
+    // Reports Category column (always present)
+    columnsHTML += `
+        <!-- Reports Category Column -->
+        <div class="MuiBox-root css-0" style="width: 100%;max-width: 300px;margin: 0 1% 0 0;">
+            <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Reports Category</label>
+            <div class="MuiAutocomplete-root css-1sljewe">
+                <div class="MuiBox-root css-0" style="width: 100%;">
+                    <div class="chips-container" id="industry${rowCounter}-chips"></div>
+                    <div class="dropdown-container">
+                        <input aria-invalid="false" autocomplete="off" id="industry${rowCounter}"
+                            placeholder="Select industries..." onfocus="showDropdown('industry${rowCounter}')" oninput="filterDropdown('industry${rowCounter}')"
+                            class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-17wfm7d"
+                            type="text" value="">
+                        <div class="dropdown-list" id="industry${rowCounter}-dropdown">
+                            ${reportsCategoryOptions.map(industry => `<div class="dropdown-item" onclick="addSelection('industry${rowCounter}', '${industry}')">${industry}</div>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add columns based on source type
+    if (selectedSource === 'socio') {
+        // Only Reports Category + Socio Type
+        columnsHTML += `
+            <!-- Socio Type Column -->
+            <div class="MuiBox-root css-0 socio-type-column" id="sociotype${rowCounter}-container" style="width: 100%;max-width: 300px;margin: 0;">
+                <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Socio Type</label>
+                <div class="MuiAutocomplete-root css-1sljewe">
+                    <div class="MuiBox-root css-0" style="width: 100%;">
+                        <div class="chips-container" id="sociotype${rowCounter}-chips"></div>
+                        <div class="dropdown-container">
+                            <input aria-invalid="false" autocomplete="off" id="sociotype${rowCounter}"
+                                placeholder="Select socio type..." onfocus="showDropdown('sociotype${rowCounter}')" oninput="filterDropdown('sociotype${rowCounter}')"
+                                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-17wfm7d"
+                                type="text" value="">
+                            <div class="dropdown-list" id="sociotype${rowCounter}-dropdown">
+                                ${socioTypeOptions.map(option => `<div class="dropdown-item" onclick="addSelection('sociotype${rowCounter}', '${option}')">${option}</div>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else if (selectedSource === 'shares') {
+        // Only Reports Category + Data Type
+        columnsHTML += `
+            <!-- DataType Column -->
+            <div class="MuiBox-root css-0 data-type-column" style="width: 100%;max-width: 300px;margin: 0;">
+                <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Data Type</label>
+                <div class="MuiAutocomplete-root css-1sljewe">
+                    <div class="MuiBox-root css-0" style="width: 100%;">
+                        <div class="chips-container" id="datatype${rowCounter}-chips"></div>
+                        <div class="dropdown-container">
+                            <input aria-invalid="false" autocomplete="off" id="datatype${rowCounter}"
+                                placeholder="Select data type..." onfocus="showDropdown('datatype${rowCounter}')" oninput="filterDropdown('datatype${rowCounter}')"
+                                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-17wfm7d"
+                                type="text" value="">
+                            <div class="dropdown-list" id="datatype${rowCounter}-dropdown">
+                                ${dataTypeOptions.map(option => `<div class="dropdown-item" onclick="addSelection('datatype${rowCounter}', '${option}')">${option}</div>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else if (selectedSource === 'nielsen') {
+        // Reports Category + Category + Data Type + Measure Type
+        columnsHTML += `
+            <!-- Category Column -->
+            <div class="MuiBox-root css-0 category-column" style="width: 100%;max-width: 400px;margin: 0 1% 0 0;">
+                <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Category</label>
+                <div class="MuiAutocomplete-root css-1sljewe">
+                    <div class="MuiBox-root css-0" style="width: 100%;">
+                        <div class="chips-container" id="category${rowCounter}-chips"></div>
+                        <div class="dropdown-container">
+                            <input aria-invalid="false" autocomplete="off" id="category${rowCounter}"
+                                placeholder="Select categories..." onfocus="showDropdown('category${rowCounter}')" oninput="filterDropdown('category${rowCounter}')"
+                                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-17wfm7d"
+                                type="text" value="">
+                            <div class="dropdown-list" id="category${rowCounter}-dropdown">
+                                ${allCategoryOptions.map(option => `<div class="dropdown-item" onclick="addSelection('category${rowCounter}', '${option}')">${option}</div>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DataType Column -->
+            <div class="MuiBox-root css-0 data-type-column" style="width: 100%;max-width: 300px;margin: 0;">
+                <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Data Type</label>
+                <div class="MuiAutocomplete-root css-1sljewe">
+                    <div class="MuiBox-root css-0" style="width: 100%;">
+                        <div class="chips-container" id="datatype${rowCounter}-chips"></div>
+                        <div class="dropdown-container">
+                            <input aria-invalid="false" autocomplete="off" id="datatype${rowCounter}"
+                                placeholder="Select data type..." onfocus="showDropdown('datatype${rowCounter}')" oninput="filterDropdown('datatype${rowCounter}')"
+                                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-17wfm7d"
+                                type="text" value="">
+                            <div class="dropdown-list" id="datatype${rowCounter}-dropdown">
+                                ${dataTypeOptions.map(option => `<div class="dropdown-item" onclick="addSelection('datatype${rowCounter}', '${option}')">${option}</div>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Measure Type Column -->
+            <div class="MuiBox-root css-0 measure-type-column" id="measuretype${rowCounter}-container" style="width: 100%;max-width: 300px;margin: 0 0 0 16px;">
+                <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Measure Type</label>
+                <div class="MuiAutocomplete-root css-1sljewe">
+                    <div class="MuiBox-root css-0" style="width: 100%;">
+                        <div class="chips-container" id="measuretype${rowCounter}-chips"></div>
+                        <div class="dropdown-container">
+                            <input aria-invalid="false" autocomplete="off" id="measuretype${rowCounter}"
+                                placeholder="Select measure type..." onfocus="showDropdown('measuretype${rowCounter}')" oninput="filterDropdown('measuretype${rowCounter}')"
+                                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-17wfm7d"
+                                type="text" value="">
+                            <div class="dropdown-list" id="measuretype${rowCounter}-dropdown">
+                                ${measureTypeOptions.map(option => `<div class="dropdown-item" onclick="addSelection('measuretype${rowCounter}', '${option}')">${option}</div>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        // Default: euromonitor (Sizes) - Reports Category + Category + Data Type
+        columnsHTML += `
+            <!-- Category Column -->
+            <div class="MuiBox-root css-0 category-column" style="width: 100%;max-width: 400px;margin: 0 1% 0 0;">
+                <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Category</label>
+                <div class="MuiAutocomplete-root css-1sljewe">
+                    <div class="MuiBox-root css-0" style="width: 100%;">
+                        <div class="chips-container" id="category${rowCounter}-chips"></div>
+                        <div class="dropdown-container">
+                            <input aria-invalid="false" autocomplete="off" id="category${rowCounter}"
+                                placeholder="Select categories..." onfocus="showDropdown('category${rowCounter}')" oninput="filterDropdown('category${rowCounter}')"
+                                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-17wfm7d"
+                                type="text" value="">
+                            <div class="dropdown-list" id="category${rowCounter}-dropdown">
+                                ${allCategoryOptions.map(option => `<div class="dropdown-item" onclick="addSelection('category${rowCounter}', '${option}')">${option}</div>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DataType Column -->
+            <div class="MuiBox-root css-0 data-type-column" style="width: 100%;max-width: 300px;margin: 0;">
+                <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Data Type</label>
+                <div class="MuiAutocomplete-root css-1sljewe">
+                    <div class="MuiBox-root css-0" style="width: 100%;">
+                        <div class="chips-container" id="datatype${rowCounter}-chips"></div>
+                        <div class="dropdown-container">
+                            <input aria-invalid="false" autocomplete="off" id="datatype${rowCounter}"
+                                placeholder="Select data type..." onfocus="showDropdown('datatype${rowCounter}')" oninput="filterDropdown('datatype${rowCounter}')"
+                                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-17wfm7d"
+                                type="text" value="">
+                            <div class="dropdown-list" id="datatype${rowCounter}-dropdown">
+                                ${dataTypeOptions.map(option => `<div class="dropdown-item" onclick="addSelection('datatype${rowCounter}', '${option}')">${option}</div>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    const newRow = document.createElement('div');
+    newRow.className = 'wrapper-flex';
+    newRow.style.marginBottom = '16px';
+    newRow.setAttribute('data-source', selectedSource);
+    newRow.innerHTML = `
+        <button style="align-self:flex-start;padding:5px 8px;margin-right:16px;" onclick="removeRow(this)">×</button>
+        ${columnsHTML}
+    `;
+    
+    container.appendChild(newRow);
+    console.log('New row added with source:', selectedSource, 'Row counter:', rowCounter);
+    
+    // Update cross button states immediately after adding the row
+    console.log('Calling updateCrossButtonStates immediately after DOM insertion');
+    updateCrossButtonStates();
+    
+    // Small delay to ensure proper initialization
+    setTimeout(() => {
+        // Update add button state since we now have a new empty row
+        checkAddButtonState();
+        // Update cross button states again to ensure consistency
+        console.log('Calling updateCrossButtonStates after timeout');
+        updateCrossButtonStates();
+    }, 100); // Increased delay slightly
+    
+    } catch(error) {
+        console.error('Error in addNewRow:', error);
+    }
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(event) {
+    // Don't close dropdowns if we're clicking on a dropdown-related element
+    if (event.target.closest('.dropdown-container') || 
+        event.target.closest('.dropdown-list') ||
+        event.target.closest('.dropdown-item') ||
+        event.target.classList.contains('dropdown-item') ||
+        event.target.tagName === 'INPUT') {
+        return;
+    }
+    
+    const dropdowns = document.querySelectorAll('.dropdown-list');
+    dropdowns.forEach(dropdown => {
+        dropdown.style.display = 'none';
+    });
+});
+
+// Initialize all category dropdowns on page load
+function initializeAllCategoryDropdowns() {
+    // Initialize existing category dropdowns
+    initializeCategoryDropdown('category1-dropdown');
+    initializeCategoryDropdown('category2-dropdown');
+    initializeCategoryDropdown('category3-dropdown');
+    console.log('All category dropdowns initialized with all available options');
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        console.log('=== DOM CONTENT LOADED ===');
+        
+        // Add onclick to Add button
+        const addButton = document.getElementById('addRowButton');
+        console.log('Add button found:', addButton);
+        if (addButton) {
+            addButton.onclick = function() {
+                console.log('Add button clicked!');
+                try {
+                    addNewRow();
+                } catch(error) {
+                    console.error('Error in addNewRow:', error);
+                }
+            };
+        }
+        
+        // Start with combinations disabled until source is selected
+        console.log('Initializing with disabled combinations...');
+        disableCombinations();
+        
+        // Initialize category report dropdown states
+        updateAllCategoryReportDropdowns();
+        
+        console.log('Page initialized with one blank row');
+    } catch(error) {
+        console.error('Error during initialization:', error);
+    }
+});
+</script>
+        </div> <!-- Close popup-content -->
+    </div> <!-- Close popup-modal -->
+</div> <!-- Close popup-overlay -->
+</body>
+</html>
