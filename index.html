@@ -531,13 +531,13 @@ function handleSourceChange() {
         
         // Update header text based on source
         if (selectedSource === 'nielsen') {
-            header.textContent = 'Report Categories × Chart Category Parameters × Data Type × Measure Type Combinations';
+            header.textContent = 'Report Categories × Measure Type × Data Type × Chart Category Parameters Combinations';
         } else if (selectedSource === 'socio') {
             header.textContent = 'Report Categories × Socio Type Combinations';
         } else if (selectedSource === 'shares') {
             header.textContent = 'Report Categories × Data Type Combinations';
         } else {
-            header.textContent = 'Report Categories × Chart Category Parameters × Data Type Combinations';
+            header.textContent = 'Report Categories × Data Type × Chart Category Parameters Combinations';
         }
     } else {
         // No source selected - disable combinations
@@ -1241,48 +1241,10 @@ function addNewRow() {
             </div>
         `;
     } else if (selectedSource === 'nielsen') {
-        // Report Categories + Chart Category Parameters + Data Type + Measure Type
+        // Report Categories + Measure Type + Data Type + Chart Category Parameters
         columnsHTML += `
-            <!-- Chart Category Parameters Column -->
-            <div class="MuiBox-root css-0 category-column" style="width: 100%;max-width: 400px;margin: 0 1% 0 0;">
-                <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Chart Category Parameters</label>
-                <div class="MuiAutocomplete-root css-1sljewe">
-                    <div class="MuiBox-root css-0" style="width: 100%;">
-                        <div class="chips-container" id="category${rowCounter}-chips"></div>
-                        <div class="dropdown-container">
-                            <input aria-invalid="false" autocomplete="off" id="category${rowCounter}"
-                                placeholder="Select categories..." onfocus="showDropdown('category${rowCounter}')" oninput="filterDropdown('category${rowCounter}')"
-                                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-17wfm7d"
-                                type="text" value="">
-                            <div class="dropdown-list" id="category${rowCounter}-dropdown">
-                                ${allCategoryOptions.map(option => `<div class="dropdown-item" onclick="addSelection('category${rowCounter}', '${option}')">${option}</div>`).join('')}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- DataType Column -->
-            <div class="MuiBox-root css-0 data-type-column" style="width: 100%;max-width: 300px;margin: 0;">
-                <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Data Type</label>
-                <div class="MuiAutocomplete-root css-1sljewe">
-                    <div class="MuiBox-root css-0" style="width: 100%;">
-                        <div class="chips-container" id="datatype${rowCounter}-chips"></div>
-                        <div class="dropdown-container">
-                            <input aria-invalid="false" autocomplete="off" id="datatype${rowCounter}"
-                                placeholder="Select data type..." onfocus="showDropdown('datatype${rowCounter}')" oninput="filterDropdown('datatype${rowCounter}')"
-                                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-17wfm7d"
-                                type="text" value="">
-                            <div class="dropdown-list" id="datatype${rowCounter}-dropdown">
-                                ${dataTypeOptions.map(option => `<div class="dropdown-item" onclick="addSelection('datatype${rowCounter}', '${option}')">${option}</div>`).join('')}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Measure Type Column -->
-            <div class="MuiBox-root css-0 measure-type-column" id="measuretype${rowCounter}-container" style="width: 100%;max-width: 300px;margin: 0 0 0 16px;">
+            <div class="MuiBox-root css-0 measure-type-column" style="width: 100%;max-width: 300px;margin: 0 1% 0 0;">
                 <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Measure Type</label>
                 <div class="MuiAutocomplete-root css-1sljewe">
                     <div class="MuiBox-root css-0" style="width: 100%;">
@@ -1299,31 +1261,9 @@ function addNewRow() {
                     </div>
                 </div>
             </div>
-        `;
-    } else {
-        // Default: euromonitor (Sizes) - Report Categories + Chart Category Parameters + Data Type
-        columnsHTML += `
-            <!-- Chart Category Parameters Column -->
-            <div class="MuiBox-root css-0 category-column" style="width: 100%;max-width: 400px;margin: 0 1% 0 0;">
-                <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Chart Category Parameters</label>
-                <div class="MuiAutocomplete-root css-1sljewe">
-                    <div class="MuiBox-root css-0" style="width: 100%;">
-                        <div class="chips-container" id="category${rowCounter}-chips"></div>
-                        <div class="dropdown-container">
-                            <input aria-invalid="false" autocomplete="off" id="category${rowCounter}"
-                                placeholder="Select categories..." onfocus="showDropdown('category${rowCounter}')" oninput="filterDropdown('category${rowCounter}')"
-                                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-17wfm7d"
-                                type="text" value="">
-                            <div class="dropdown-list" id="category${rowCounter}-dropdown">
-                                ${allCategoryOptions.map(option => `<div class="dropdown-item" onclick="addSelection('category${rowCounter}', '${option}')">${option}</div>`).join('')}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- DataType Column -->
-            <div class="MuiBox-root css-0 data-type-column" style="width: 100%;max-width: 300px;margin: 0;">
+            <div class="MuiBox-root css-0 data-type-column" style="width: 100%;max-width: 300px;margin: 0 1% 0 0;">
                 <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Data Type</label>
                 <div class="MuiAutocomplete-root css-1sljewe">
                     <div class="MuiBox-root css-0" style="width: 100%;">
@@ -1335,6 +1275,66 @@ function addNewRow() {
                                 type="text" value="">
                             <div class="dropdown-list" id="datatype${rowCounter}-dropdown">
                                 ${dataTypeOptions.map(option => `<div class="dropdown-item" onclick="addSelection('datatype${rowCounter}', '${option}')">${option}</div>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Category Parameters Column -->
+            <div class="MuiBox-root css-0 category-column" style="width: 100%;max-width: 400px;margin: 0;">
+                <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Chart Category Parameters</label>
+                <div class="MuiAutocomplete-root css-1sljewe">
+                    <div class="MuiBox-root css-0" style="width: 100%;">
+                        <div class="chips-container" id="category${rowCounter}-chips"></div>
+                        <div class="dropdown-container">
+                            <input aria-invalid="false" autocomplete="off" id="category${rowCounter}"
+                                placeholder="Select chart category parameters..." onfocus="showDropdown('category${rowCounter}')" oninput="filterDropdown('category${rowCounter}')"
+                                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-17wfm7d"
+                                type="text" value="">
+                            <div class="dropdown-list" id="category${rowCounter}-dropdown">
+                                ${allCategoryOptions.map(option => `<div class="dropdown-item" onclick="addSelection('category${rowCounter}', '${option}')">${option}</div>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        // Default: euromonitor (Sizes) - Report Categories + Data Type + Chart Category Parameters
+        columnsHTML += `
+            <!-- DataType Column -->
+            <div class="MuiBox-root css-0 data-type-column" style="width: 100%;max-width: 300px;margin: 0 1% 0 0;">
+                <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Data Type</label>
+                <div class="MuiAutocomplete-root css-1sljewe">
+                    <div class="MuiBox-root css-0" style="width: 100%;">
+                        <div class="chips-container" id="datatype${rowCounter}-chips"></div>
+                        <div class="dropdown-container">
+                            <input aria-invalid="false" autocomplete="off" id="datatype${rowCounter}"
+                                placeholder="Select data type..." onfocus="showDropdown('datatype${rowCounter}')" oninput="filterDropdown('datatype${rowCounter}')"
+                                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-17wfm7d"
+                                type="text" value="">
+                            <div class="dropdown-list" id="datatype${rowCounter}-dropdown">
+                                ${dataTypeOptions.map(option => `<div class="dropdown-item" onclick="addSelection('datatype${rowCounter}', '${option}')">${option}</div>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Category Parameters Column -->
+            <div class="MuiBox-root css-0 category-column" style="width: 100%;max-width: 400px;margin: 0;">
+                <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-animated MuiFormLabel-colorPrimary css-j5m5j0">Chart Category Parameters</label>
+                <div class="MuiAutocomplete-root css-1sljewe">
+                    <div class="MuiBox-root css-0" style="width: 100%;">
+                        <div class="chips-container" id="category${rowCounter}-chips"></div>
+                        <div class="dropdown-container">
+                            <input aria-invalid="false" autocomplete="off" id="category${rowCounter}"
+                                placeholder="Select chart category parameters..." onfocus="showDropdown('category${rowCounter}')" oninput="filterDropdown('category${rowCounter}')"
+                                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-17wfm7d"
+                                type="text" value="">
+                            <div class="dropdown-list" id="category${rowCounter}-dropdown">
+                                ${allCategoryOptions.map(option => `<div class="dropdown-item" onclick="addSelection('category${rowCounter}', '${option}')">${option}</div>`).join('')}
                             </div>
                         </div>
                     </div>
